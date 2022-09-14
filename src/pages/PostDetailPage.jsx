@@ -9,7 +9,7 @@ const PostDetailPage = () => {
 
   const fetchData = () => {
     // change the address according to your setting
-    fetch(`http://localhost:8888/wp-json/wp/v2/posts/${id}`)
+    fetch(`http://13.49.227.104/?rest_route=/wp/v2/posts/${id}`)
       .then((response) => {
         return response.json();
       })
@@ -27,7 +27,7 @@ const PostDetailPage = () => {
       {post.content && (
         <>
           <h1>{post.title?.rendered}</h1>
-          <div>{parse(post.content.rendered)}</div>
+          <div className="filter">{parse(post.content.rendered)}</div>
         </>
       )}
     </>
