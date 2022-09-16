@@ -1,70 +1,77 @@
-# Getting Started with Create React App
+## How to run locally
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+##### 1. Clone the repo
 
-## Available Scripts
+```bash
+git clone git@github.com:natalia-se/cat-blog.git
+```
 
-In the project directory, you can run:
+##### 2. Install and run wordpress docker container
 
-### `npm start`
+```bash
+pushd ./cat-blog/
+cd ./backend/
+docker compose up -d
+popd
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+##### 3. Configure Wordpress
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Goto http://localhost in browser and configure Wordpress
+add posts
 
-### `npm test`
+##### 4. Run react app
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+yarn start
+```
 
-### `npm run build`
+## How to deploy backend to AWS
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+##### 1. Login to AWS
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Goto [AWS console sing-in page](https://console.aws.amazon.com/console/home?nc2=h_ct&src=header-signin) and enter your credentials
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+##### 2. Create EC2 instance with wordpress
 
-### `npm run eject`
+- open in browser [Launch instanses page](https://eu-north-1.console.aws.amazon.com/ec2/home?region=eu-north-1#Instances:)
+- select name for your server
+- create new or select existing keypair
+- allow SSH trafic from your IP and HTTP trafic from the internet
+- in **Advanced details** specify user data:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+#!/bin/bash
+# Install wordpress docker image
+curl https://raw.githubusercontent.com/natalia-se/cat-blog/master/backend/user-data.sh | bash
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- press **Launce instance** button
+- go to **[Instances](https://eu-north-1.console.aws.amazon.com/ec2/home?region=eu-north-1#Instances:)** and press on your **Instance ID**
+- Copy public IP address of the instance and open it in the browser
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## How to deploy frontend to AWS
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+##### 1. Login to AWS
 
-## Learn More
+Goto [AWS console sing-in page](https://console.aws.amazon.com/console/home?nc2=h_ct&src=header-signin) and enter your credentials
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+##### 2. Create EC2 instance
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- open in browser [Launch instanses page](https://eu-north-1.console.aws.amazon.com/ec2/home?region=eu-north-1#Instances:)
+- select name for your server
+- create new or select existing keypair
+- allow SSH trafic from your IP and HTTP trafic from the internet
+- create new security group which allows inbound traffic to port 3000 from 0.0.0.0/32
+- in **Advanced details** specify user data:
 
-### Code Splitting
+```bash
+#!/bin/bash
+# Install web server and deploy
+curl https://raw.githubusercontent.com/natalia-se/cat-blog/master/backend/frontend.sh | bash
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- press **Launce instance** button
+- go to **[Instances](https://eu-north-1.console.aws.amazon.com/ec2/home?region=eu-north-1#Instances:)** and press on your **Instance ID**
+- it takes up to 10 min to download all the dependencies and start web app
+- open it in your browser http://{public ip address of your instance}:3000
